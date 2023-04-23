@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     public Grill grill;
     public Rack rack;
     public Fridge fridge;
+    public Plate plate;
 
     // Name of an item that is currently in inventory
     [SerializeField] string itemInInventory = "none";
@@ -22,6 +23,8 @@ public class Player : MonoBehaviour
     // 1. RawMeat
     // 2. CookedMeat
     // 3. BurnedMeat
+    // 4. SupplyCrate
+    // 5. ClassicBurger
 
     // Represents in which collider is player currently in
     [SerializeField] string interactionRange = "none";
@@ -32,6 +35,7 @@ public class Player : MonoBehaviour
     // 3. Rack
     // 4. Fridge
     // 5. Table 1
+    // 6. Plate
 
     // Images for each item in inventory with indexes
     [SerializeField] Texture[] itemImages = new Texture[1];
@@ -39,6 +43,8 @@ public class Player : MonoBehaviour
     // 0. RawMeat
     // 1. CookedMeat
     // 2. BurnedMeat
+    // 3. SupplyCrate
+    // 4. ClassicBurger
    
 
     // Start is called before the first frame update
@@ -87,6 +93,10 @@ public class Player : MonoBehaviour
         {
             interactionRange = "Table 1";
         }
+        else if (other.transform.tag == "Plate")
+        {
+            interactionRange = "Plate";
+        }
 
         if (interactionRange != "none")
         {
@@ -120,6 +130,38 @@ public class Player : MonoBehaviour
         {
             grill.PlayerInteractionRequest(itemInInventory);
         }
+        else if (interactionRange == "Rack")
+        {
+            // Taking crate from the rack
+            if(rack.CanTakeSupplies() && itemInInventory == "none")
+            {
+                rack.TakeSupplies();
+                AddItemToInventory("SupplyCrate");
+            }
+
+            // Restocking
+
+        }
+        else if (interactionRange == "Plate")
+        {
+            // Taking the plate
+            if(itemInInventory == "none" && plate.IsPlateSetUp() && plate.CanCurrentlyTakeThePlate())
+            {
+                AddItemToInventory(plate.TakePlate());
+            }
+            // Adding item on the plate
+            else if(itemInInventory != "none" && itemInInventory != "SupplyCrate" && plate.IsPlateSetUp() && plate.CanAddThisItemOnThePlate(itemInInventory))
+            {
+                plate.AddingItemOnThePlate(itemInInventory);
+                RemoveItemFromInventory();
+            }
+            // Setting up the plate
+            else if(itemInInventory == "SupplyCrate" && !plate.IsPlateSetUp())
+            {
+                plate.AddPlate();
+                RemoveItemFromInventory();
+            }
+        }
     }
 
     public void AddItemToInventory(string itemName)
@@ -150,6 +192,14 @@ public class Player : MonoBehaviour
         else if (itemInInventory == "BurnedMeat")
         {
             inventoryImage.texture = itemImages[2];
+        }
+        else if (itemInInventory == "SupplyCrate")
+        {
+            inventoryImage.texture = itemImages[3];
+        }
+        else if (itemInInventory == "ClassicBurger")
+        {
+            inventoryImage.texture = itemImages[4];
         }
     }
 

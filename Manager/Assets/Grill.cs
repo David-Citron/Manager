@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Grill : MonoBehaviour
 {
@@ -12,12 +13,19 @@ public class Grill : MonoBehaviour
     public Transform grillPositionPoint;
     public ActionButton grillButton;
 
-    public GameObject sliderMenu;
-    public Image progressSliderFill;
-    public Slider progressSlider;
+    public GameObject timerMenu;
+    public Image timerFill;
+    public TMP_Text timerText;
+    public RawImage timerBackground;
+
     public Color32 rawColor;
     public Color32 cookedColor;
     public Color32 burnedColor;
+    public Color32 firstTimerStage;
+    public Color32 secondTimerStage;
+    public Color32 timerFinished;
+    public Color32 primaryTimerTextColor;
+    public Color32 secondaryTimerTextColor;
 
     // Cooking = true -> Meat is currently cooking otherwise there is no meat cooking
     public bool cooking = false;
@@ -31,16 +39,23 @@ public class Grill : MonoBehaviour
 
     bool continueCooking = false;
 
+    // MeatMaterial contains materials of different stages of cooking
+    public Material[] meatMaterials;
+    // 0. Raw
+    // 1. Cooked
+    // 2. Burned
+
+    public GameObject meatModel;
+
     // Start is called before the first frame update
     void Start()
     {
         grillButtonDefaultColor = grillButtonImage.color;
         cookingState = "none";
         cooking = false;
-        progressSlider.minValue = 0;
-        progressSlider.maxValue = 100;
-        ResetSlider();
-        SetSliderActive(false);
+        ResetTimer();
+        SetTimerVisible(false);
+        meatModel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -82,6 +97,8 @@ public class Grill : MonoBehaviour
     {
         player.RemoveItemFromInventory();
         continueCooking = true;
+        meatModel.SetActive(true);
+        meatModel.GetComponent<Renderer>().material = meatMaterials[0];
 
         // Start cooking coroutine
         StartCoroutine(CookingProcess());
@@ -93,7 +110,8 @@ public class Grill : MonoBehaviour
         cookingState = "none";
         cooking = false;
         continueCooking = false;
-        SetSliderActive(false);
+        SetTimerVisible(false);
+        meatModel.SetActive(false);
     }
 
     IEnumerator CookingProcess()
@@ -103,50 +121,77 @@ public class Grill : MonoBehaviour
 
         cookingState = "Raw";
         cooking = true;
-        SetSliderActive(true);
-        ResetSlider();
+        float updateInterval = .2f;
+        float secondsLeft = updateInterval * 100 / 2;
+        bool alreadyCooked = false;
+
+        SetTimerVisible(true);
+        ResetTimer();
 
         while (progress < 100 && continueCooking)
         {
-            yield return new WaitForSecondsRealtime(.2f);
+            yield return new WaitForSecondsRealtime(updateInterval);
             progress++;
-            UpdateSlider(progress);
-            if(progress >= 50)
+            if(progress == 50)
             {
                 cookingState = "Cooked";
+                alreadyCooked = true;
+                secondsLeft = updateInterval * 100 / 2;
+                meatModel.GetComponent<Renderer>().material = meatMaterials[1];
             }
+            secondsLeft -= updateInterval;
+            // Alternative (less smooth) version for secondsLeft: (int)Mathf.Round(secondsLeft)
+            UpdateTimer(progress, (int) secondsLeft, alreadyCooked);
         }
         if(continueCooking)
         {
             cookingState = "Burned";
+            meatModel.GetComponent<Renderer>().material = meatMaterials[2];
         }
     }
 
-    void ResetSlider()
+    void ResetTimer()
     {
-        progressSlider.value = progressSlider.minValue;
-        progressSliderFill.color = rawColor;
+        timerFill.color = rawColor;
+        timerFill.fillAmount = 0;
+        timerBackground.color = firstTimerStage;
+        timerText.text = "9"; // Alternative (less smooth) version: "10"
+        timerBackground.gameObject.SetActive(true);
+        timerText.color = primaryTimerTextColor;
     }
 
-    void UpdateSlider(int value)
+    void UpdateTimer(int valueInPercents, int secondsLeft, bool burningStage)
     {
-        progressSlider.value = value;
-        if(value < 50)
+        timerFill.color = rawColor;
+        timerText.text = secondsLeft.ToString();
+        timerFill.fillAmount = (float)valueInPercents / 100;
+
+        if(burningStage)
         {
-            progressSliderFill.color = rawColor;
-        }
-        else if(value < 100)
-        {
-            progressSliderFill.color = cookedColor;
+            timerBackground.color = secondTimerStage;
         }
         else
         {
-            progressSliderFill.color = burnedColor;
+            timerBackground.color = firstTimerStage;
         }
+
+        if(valueInPercents == 100)
+        {
+            timerFill.color = burnedColor;
+            timerBackground.gameObject.SetActive(false);
+            timerText.text = "!!!";
+            timerText.color = secondaryTimerTextColor;
+        }
+        else if(valueInPercents >= 50)
+        {
+            timerFill.color = cookedColor;
+        }
+
+        
     }
 
-    void SetSliderActive(bool value)
+    void SetTimerVisible(bool value)
     {
-        sliderMenu.SetActive(value);
+        timerMenu.SetActive(value);
     }
 }

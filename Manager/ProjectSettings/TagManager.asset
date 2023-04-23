@@ -11,6 +11,7 @@ TagManager:
   - Rack
   - Fridge
   - Table 1
+  - Plate
   layers:
   - Default
   - TransparentFX

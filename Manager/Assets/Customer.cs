@@ -1,15 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Customer : MonoBehaviour
 { 
     string nameOfOrder = "none";
+    public Table assignedTable;
+    public NavMeshAgent agent;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        assignedTable = Camera.main.GetComponent<TableManagementScript>().AssignFreeTable();
+        agent = GetComponent<NavMeshAgent>();
+        StartCoroutine(Starting());
+    }
+
+    IEnumerator Starting()
+    {
+        yield return new WaitForEndOfFrame();
+        assignedTable.customerSeatRequest(agent, this);
     }
 
     // Update is called once per frame
@@ -24,9 +35,9 @@ public class Customer : MonoBehaviour
         if(randomNumber == 0)
         {
             nameOfOrder = "Classic Burger";
-        }else if(randomNumber == 1)
+        }else
         {
-            nameOfOrder = "Double Burger";
+            nameOfOrder = "Classic Burger";
         }
     }
 }
