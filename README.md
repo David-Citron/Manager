@@ -38,9 +38,9 @@ Aktuální stav vývoje hry.
 - [x] Dokončení výroby burgeru
 - [ ] Objednávky nových zásob
 - [ ] Doplňování zásob do regálu
-- [ ] Systém zákazníků
+- [x] Systém zákazníků
 - [ ] Placení zákazníků
 - [ ] Ukazatel peněz
 ## Ostatní
-- [ ] Soundtrack
+- [x] Soundtrack
 - [ ] Logo hry

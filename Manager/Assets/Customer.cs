@@ -5,22 +5,25 @@ using UnityEngine.AI;
 
 public class Customer : MonoBehaviour
 { 
-    string nameOfOrder = "none";
     public Table assignedTable;
     public NavMeshAgent agent;
+    public bool seated;
+    public bool leaving;
 
     // Start is called before the first frame update
     void Start()
     {
+        seated = false;
         assignedTable = Camera.main.GetComponent<TableManagementScript>().AssignFreeTable();
         agent = GetComponent<NavMeshAgent>();
-        StartCoroutine(Starting());
+        leaving = false;
+        assignedTable.CustomerSeatRequest(agent, this);
     }
 
     IEnumerator Starting()
     {
         yield return new WaitForEndOfFrame();
-        assignedTable.customerSeatRequest(agent, this);
+        assignedTable.CustomerSeatRequest(agent, this);
     }
 
     // Update is called once per frame
@@ -29,15 +32,27 @@ public class Customer : MonoBehaviour
         
     }
 
-    void GenerateOrder()
+    private void OnTriggerEnter(Collider other)
     {
-        int randomNumber = Random.Range(0, 2);
-        if(randomNumber == 0)
+        if(other.tag == "CustomerSeat")
         {
-            nameOfOrder = "Classic Burger";
-        }else
+            assignedTable.CustomerArrived(this);
+        }
+        else if(other.tag == "CustomerCashRegister")
         {
-            nameOfOrder = "Classic Burger";
+            assignedTable.tableManagementScript.cashRegister.CustomerArriving();
+        }
+        
+        // Add other conditions here:
+
+        else if(other.tag == "CustomerLeavingPoint")
+        {
+            if(leaving)
+            {
+                Destroy(this.gameObject);
+            }
         }
     }
+
+    
 }

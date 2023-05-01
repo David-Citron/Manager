@@ -15,6 +15,8 @@ public class Player : MonoBehaviour
     public Rack rack;
     public Fridge fridge;
     public Plate plate;
+    public Table table1;
+    public Table table2;
 
     // Name of an item that is currently in inventory
     [SerializeField] string itemInInventory = "none";
@@ -93,6 +95,10 @@ public class Player : MonoBehaviour
         {
             interactionRange = "Table 1";
         }
+        else if (other.transform.tag == "Table 2")
+        {
+            interactionRange = "Table 2";
+        }
         else if (other.transform.tag == "Plate")
         {
             interactionRange = "Plate";
@@ -120,6 +126,7 @@ public class Player : MonoBehaviour
         interactionMenu.SetActive(value);
     }
 
+    // Pressed Interaction button or Space
     public void Interaction()
     {
         if(interactionRange == "Fridge")
@@ -161,6 +168,27 @@ public class Player : MonoBehaviour
                 plate.AddPlate();
                 RemoveItemFromInventory();
             }
+            // Putting plate back
+            else if(itemInInventory == "ClassicBurger" && !plate.IsPlateSetUp())
+            {
+                plate.AddPlate();
+                plate.AddingItemOnThePlate("CookedMeat");
+                RemoveItemFromInventory();
+            }
+        }
+        else if(interactionRange == "Table 1" && itemInInventory == table1.nameOfCurrentOrder)
+        {
+            table1.ReceiveFood();
+            RemoveItemFromInventory();
+        }
+        else if (interactionRange == "Table 2" && itemInInventory == table2.nameOfCurrentOrder)
+        {
+            table2.ReceiveFood();
+            RemoveItemFromInventory();
+        }
+        else if(interactionRange == "CashRegister" && cashRegister.IsCustomerAtTheCashRegister())
+        {
+            cashRegister.CustomerPayingAtTheCashRegister();
         }
     }
 

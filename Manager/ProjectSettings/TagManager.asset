@@ -12,6 +12,10 @@ TagManager:
   - Fridge
   - Table 1
   - Plate
+  - CustomerSeat
+  - CustomerCashRegister
+  - CustomerLeavingPoint
+  - Table 2
   layers:
   - Default
   - TransparentFX
