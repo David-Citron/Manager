@@ -18,6 +18,8 @@ public class CashRegister : MonoBehaviour
     public Table currentTable;
     public List<Table> queueList;
 
+    public MoneyManager moneyManager;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +27,7 @@ public class CashRegister : MonoBehaviour
         customerIsAtTheCashRegister = false;
         customerArrived = false;
         currentTable = null;
+        moneyManager = Camera.main.GetComponent<MoneyManager>();
     }
 
     // Update is called once per frame
@@ -78,7 +81,7 @@ public class CashRegister : MonoBehaviour
 
     public IEnumerator QueueUpdateDelay()
     {
-        yield return new WaitForSecondsRealtime(4);
+        yield return new WaitForSecondsRealtime(12);
         QueueUpdate();
     }
 
@@ -106,7 +109,7 @@ public class CashRegister : MonoBehaviour
 
     public void CustomerPayingAtTheCashRegister()
     {
-        // Add money
+        moneyManager.AddMoney(100);
         currentTable.MakeAllCustomersLeave();
         ResetCashRegisterState();
     }

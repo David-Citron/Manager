@@ -78,16 +78,16 @@ public class Rack : MonoBehaviour
     public void UpdateSupplies()
     {
         suppliesLabel.text = currentSupplies + "/" + maxSupplies;
-        showCurrentBoxModels();
+        ShowCurrentBoxModels();
     }
 
-    private void showCurrentBoxModels()
+    private void ShowCurrentBoxModels()
     {
         int numberOfBoxesToShow = ((currentSupplies + (maxSupplies / numberOfBoxesAvailable - 1)) / (maxSupplies / numberOfBoxesAvailable));
-        showNumberOfBoxes(numberOfBoxesToShow);
+        ShowNumberOfBoxes(numberOfBoxesToShow);
     }
     
-    private void showNumberOfBoxes(int numberOfBoxes)
+    private void ShowNumberOfBoxes(int numberOfBoxes)
     {
         if(numberOfBoxes > maxSupplies)
         {
@@ -103,5 +103,15 @@ public class Rack : MonoBehaviour
                 boxModels[i].SetActive(false);
             }
         }
+    }
+
+    public void AddSupplies(int value)
+    {
+        currentSupplies += value;
+        if(currentSupplies > maxSupplies)
+        {
+            currentSupplies = maxSupplies;
+        }
+        UpdateSupplies();
     }
 }

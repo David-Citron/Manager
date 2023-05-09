@@ -36,11 +36,11 @@ Aktuální stav vývoje hry.
 - [x] Zobrazování časovače při přípravě masa
 - [x] Získání zásob z regálu
 - [x] Dokončení výroby burgeru
-- [ ] Objednávky nových zásob
-- [ ] Doplňování zásob do regálu
+- [x] Objednávky nových zásob
+- [x] Doplňování zásob do regálu
 - [x] Systém zákazníků
-- [ ] Placení zákazníků
-- [ ] Ukazatel peněz
+- [x] Placení zákazníků
+- [x] Ukazatel peněz
 ## Ostatní
 - [x] Soundtrack
 - [ ] Logo hry
